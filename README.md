@@ -1,27 +1,25 @@
 # Basta
 
-Personal static app: Vite + React + TypeScript, HashRouter, CSS modules, data via plain `fetch` to Supabase REST (PostgREST).
+Online version of the paper game *Basta* (Tutti Frutti). Vite + React 19 + TypeScript, HashRouter, static hosting on GitHub Pages, data on Supabase (REST via plain `fetch`; `@supabase/supabase-js` only for realtime Broadcast pings). UI in English, Spanish and Spanglish. Plan: [`Docs/basta-plan.md`](Docs/basta-plan.md).
 
 ## Setup
 
-```sh
-npm install
-cp .env.example .env   # fill in VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY
-```
-
-The example feature expects a table `items` (`id` bigint identity PK, `title` text, `created_at` timestamptz default now()) with RLS policies allowing the anon role to select/insert/delete.
+1. In the Supabase SQL editor, run [`supabase/001_basta.sql`](supabase/001_basta.sql). It creates the `basta_*` tables (RLS on, no direct access) and the RPC functions the app calls.
+2. Copy `.env.example` to `.env` and set `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY`.
+3. `npm install`
 
 ## Scripts
 
-- `npm run dev` – dev server at http://localhost:5173/egm-basta/
+- `npm run dev` – dev server
 - `npm run lint` – ESLint
-- `npm run build` – typecheck + build to `dist/`
+- `npm test` – Vitest (normalization, letters, scoring, votes, rotation)
+- `npm run build` – type-check and build into `dist/`
 - `npm run preview` – serve the build
 
-## Deploy (GitHub Pages)
+## Deploy
 
-1. Repo Settings → Pages → Source: **GitHub Actions**.
-2. Repo Settings → Variables → Actions: add `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY`.
-3. Push to `main`; `.github/workflows/deploy.yml` builds and deploys to `https://<user>.github.io/egm-basta/`.
+Pushing to `main` runs `.github/workflows/deploy.yml` (lint, test, build, deploy to GitHub Pages). Set the repository variables `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY`, and set Pages source to *GitHub Actions*. The app is served from `/egm-basta/`; invite links look like `/egm-basta/?session=CODE`.
 
-The anon key is public by design; protect data with RLS. Never commit `.env`.
+## Versioning
+
+Major.Minor.Patch in `package.json`, shown in the footer.

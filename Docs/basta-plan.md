@@ -1,10 +1,10 @@
-# Basta Online – Implementation Plan (DRAFT for review)
+# Basta Online – Plan
 
 Repo: egm-basta (Vite + React 19 + TS, HashRouter, base /egm-basta/, GitHub Pages, Supabase).
 Note: HashRouter + `?session=code` — join links are `https://…/egm-basta/?session=a1b2c3` (query before the hash); the app reads it on load and routes to `#/join`.
 
 ## 1. Decisions confirmed
-- Realtime: Supabase Realtime (Postgres changes for state, Broadcast for transient events). No SDK-free option for websockets → add `@supabase/supabase-js` (realtime only) OR use raw Phoenix websocket. **Open: allow the SDK for realtime?** (REST stays plain fetch.)
+- Realtime: clients poll `basta_get_state` every ~2.5 s (this is also the presence heartbeat) and `@supabase/supabase-js` (dynamically imported, Broadcast only) sends a "ping" on channel `basta:<code>` after every action so other clients refetch immediately. REST stays plain fetch. No Postgres-changes subscriptions, so tables stay unreadable by the anon role.
 - Identity: no accounts. Display name suggested from device/browser (e.g. "iPhone · Safari"), editable, stored in localStorage. (Browsers cannot read real device names.) A random player token in localStorage identifies the player/rejoin.
 - Scoring: configurable per session; default unique 100 / shared 50 / invalid 0.
 - Validation: auto-check starting letter + normalized comparison (case/accents/whitespace ignored); on Results, players can challenge an answer, others vote, majority decides; creator breaks ties.
@@ -29,11 +29,12 @@ Note: HashRouter + `?session=code` — join links are `https://…/egm-basta/?se
 Table naming: `basta_<table>` (personal EGM convention). Sessions expire 24h after creation (`expires_at`; pg_cron purge or lazy check in RPCs). Codes are 6 chars. Supabase URL/anon key come from `.env` (`VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`) and GitHub Actions variables.
 - basta_session(id, code, name, creator_player_id, status[lobby|playing|closed], categories jsonb, settings jsonb{basta_seconds, pts_unique, pts_shared, lang}, used_letters text[], created_at)
 - basta_player(id, session_id, token_hash, name, joined_at, last_seen, is_creator)
-- basta_round(id, session_id, number, letter, spinner_id, stopper_id, status[picking|writing|countdown|locked|scored], spin_started_at, stopped_at, basta_by, basta_at)
-- basta_answer(round_id, player_id, category_idx, text, normalized, status[valid|duplicate|invalid|challenged], points)
-- basta_vote(round_id, answer ref, voter_id, vote)
-- RPC functions (security definer) for: create_session, join_session, start_spin, stop_spin (computes letter), press_basta, submit_answers, score_round, vote. Anon key + RLS: clients can only read their own session by code; all writes go through RPCs (validated server-side, e.g. Basta only if all fields filled, scoring computed in DB, not on client).
-- Realtime: subscribe to session/rounds/players/answers rows for the session; presence for player count.
+- basta_player also has join_seq, first_round, last_seen ("connected" = seen in the last 20 s).
+- basta_round(id, session_id, number, letter, pool, spinner_id, stopper_id, status[picking|writing|countdown|locked], spin_started_at, stopped_at, basta_by, basta_at); `pool` = letters still available.
+- basta_answer(round_id, player_id, category_idx, text, normalized); blanks are stored as empty rows (marks "submitted").
+- basta_vote(round_id, target_player_id, category_idx, voter_id, valid)
+- RPC functions (security definer, token-authenticated, in `supabase/001_basta.sql`): create_session, join_session, get_state, start_spin, stop_spin (computes the letter), press_basta, submit_answers, vote, next_round, close_session. RLS is on with no policies; all access goes through RPCs. Other players' answers stay hidden until the round locks (after the countdown and once everyone submitted, or after a 4 s grace).
+- Scoring is derived, not stored: a pure tested function (`src/logic/scoring.ts`) computes points from answers + votes, so every client shows the same result. Valid = non-blank, starts with the letter, not rejected by vote; unique → pts_unique, shared (same normalized text) → pts_shared. Votes: majority wins; ties decided by the creator.
 
 ## 5. Design system
 - Background: paper sheet texture with blue square grid and red left margin (CSS gradients/SVG, no heavy images).
@@ -43,20 +44,20 @@ Table naming: `basta_<table>` (personal EGM convention). Sessions expire 24h aft
 - i18n: simple dictionary (en, es, spanglish) via context; no library.
 
 ## 5b. Versioning
-Major.Minor.Patch (semver) in `package.json`, injected at build time and shown as a small muted footer (e.g. `v0.1.0`). Starts at 0.1.0; Minor per milestone/feature, Patch per fix, 1.0.0 at first full playable release. Plan is kept at `Docs/basta-plan.md` and updated in place as the app evolves, written as if originally planned that way.
+Major.Minor.Patch (semver) in `package.json`, injected at build time and shown as a small muted footer (e.g. `v0.1.0`). Started at 0.1.0; Minor per milestone/feature, Patch per fix, 1.0.0 at first full playable release. Plan is kept at `Docs/basta-plan.md` and updated in place as the app evolves, written as if originally planned that way.
 
 ## 6. Milestones
-1. Design tokens, layout, fonts, background, i18n scaffold.
-2. Supabase schema + RLS + RPCs (SQL migration files in repo `supabase/`), local test.
-3. Landing, create flow, category editor, code + QR (small QR lib or inline generator).
-4. Session lobby, join, presence.
+1. Design tokens, layout, fonts, background, i18n scaffold, version footer (v0.2.0).
+2. Supabase schema + RLS + RPCs (`supabase/001_basta.sql`), tested against Postgres (v0.3.0).
+3. Landing, create flow, category editor, code + QR.
+4. Session page, join, presence.
 5. Letter picker synced rotation.
 6. Round writing, Basta button/countdown/lock.
 7. Scoring, results, challenges/votes, totals.
 8. Close game, final standings, previous-letter strip.
-9. Rules page (user-friendly) + version footer.
-10. Polish, accessibility pass, mobile-first QA, README + deploy.
-Testing: user chose ESLint-only; I recommend adding Vitest for the scoring/normalization/letter functions (small, high-value) — to confirm.
+9. Rules page + version footer.
+10. Polish, accessibility pass, mobile-first QA, README + deploy. First full playable release: v1.0.0.
+Testing: ESLint + Vitest (normalization, letters, scoring, votes, rotation).
 
 ## 7. Open questions
 Resolved: supabase-js allowed for realtime; Vitest added for scoring/normalization/letter/rotation logic; creator advances rounds; 6-char code, 24h expiry; env config; blanks allowed for non-pressers (score 0).

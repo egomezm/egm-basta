@@ -20,6 +20,9 @@ const en = {
   errNotAllFilled: 'Fill in every category before calling Basta.',
   errTooLate: 'Too late, the round is already over.',
   errNotMember: 'You are not part of this game yet.',
+  errNotYourTurn: 'It is not your turn.',
+  errBadState: 'That is not possible right now.',
+  errNotAllowed: 'You cannot do that.',
 
   yourName: 'Your name',
   yourNameHint: 'Suggested from your device. Change it if you like.',
@@ -158,6 +161,9 @@ const es: Dict = {
   errNotAllFilled: 'Llena todas las categorías antes de decir Basta.',
   errTooLate: 'Muy tarde, la ronda ya terminó.',
   errNotMember: 'Todavía no eres parte de este juego.',
+  errNotYourTurn: 'No es tu turno.',
+  errBadState: 'Eso no se puede ahora mismo.',
+  errNotAllowed: 'No puedes hacer eso.',
 
   yourName: 'Tu nombre',
   yourNameHint: 'Sugerido según tu dispositivo. Cámbialo si quieres.',
@@ -294,6 +300,9 @@ const sp: Dict = {
   errNotAllFilled: 'Llena todas las categorías antes de decir Basta.',
   errTooLate: 'Too late, la ronda ya terminó.',
   errNotMember: 'Todavía no eres parte de este game.',
+  errNotYourTurn: 'No es tu turno.',
+  errBadState: 'Eso no se puede right now.',
+  errNotAllowed: 'No puedes hacer eso.',
 
   yourName: 'Tu nombre',
   yourNameHint: 'Sugerido por tu device. Cámbialo si quieres.',

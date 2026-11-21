@@ -1,0 +1,40 @@
+.head { display: flex; justify-content: space-between; gap: 0.6rem; flex-wrap: wrap; align-items: center; }
+.head h1 { margin: 0; }
+.letterBar { text-align: center; }
+.letter {
+  font-family: var(--font-board); font-weight: 900; font-size: 4.5rem; line-height: 1;
+  color: var(--terracotta); min-height: 5rem; display: flex; align-items: center; justify-content: center;
+}
+.letter.rolling { color: var(--teal); }
+.big { font-size: 1.2rem; padding: 0.6rem 1.6rem; }
+.players { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.players li { border: 1.5px solid var(--ink); border-radius: 999px; padding: 0.1rem 0.7rem; background: #fff; font-size: 0.95rem; }
+.players li.away { opacity: 0.5; }
+.tag { font-size: 0.7rem; text-transform: uppercase; color: var(--ink-soft); margin-left: 0.3rem; font-family: var(--font-board); }
+.sheet { display: flex; flex-direction: column; gap: 0.5rem; }
+.sheet label { font-size: 0.9rem; color: var(--ink-soft); }
+.sheet input { width: 100%; box-sizing: border-box; font-size: 1.3rem; }
+.hint { color: var(--danger); font-size: 0.85rem; }
+.countdown {
+  font-family: var(--font-board); font-weight: 900; font-size: 1.6rem; text-align: center;
+  color: var(--magenta); animation: pulse 1s ease-in-out infinite;
+}
+@keyframes pulse { 50% { transform: scale(1.08); } }
+.tableWrap { overflow-x: auto; }
+.table { border-collapse: collapse; width: 100%; }
+.table th, .table td { border: 1px solid var(--ink-soft); padding: 0.3rem 0.5rem; text-align: left; vertical-align: top; }
+.table th { font-family: var(--font-board); font-size: 0.8rem; }
+.cellText { font-size: 1.15rem; }
+.st { font-size: 0.75rem; color: var(--ink-soft); }
+.unique { background: rgba(60, 160, 120, 0.15); }
+.shared { background: rgba(240, 180, 40, 0.18); }
+.bad { background: rgba(200, 60, 60, 0.12); }
+.votes { display: flex; gap: 0.25rem; align-items: center; font-size: 0.8rem; }
+.votes button { padding: 0 0.4rem; box-shadow: none; font-size: 0.8rem; }
+.votes button.on { background: var(--marigold); }
+.strip { display: flex; flex-wrap: wrap; gap: 0.2rem; font-family: var(--font-board); }
+.strip span { width: 1.6rem; text-align: center; border: 1px solid var(--ink-soft); border-radius: 4px; }
+.strip .used { text-decoration: line-through; opacity: 0.4; }
+.board2 { list-style: none; padding: 0; margin: 0; counter-reset: pos; }
+.board2 li { display: flex; justify-content: space-between; padding: 0.2rem 0; border-bottom: 1px dotted var(--ink-soft); }
+.winner { font-family: var(--font-board); font-size: 1.4rem; color: var(--terracotta); }
