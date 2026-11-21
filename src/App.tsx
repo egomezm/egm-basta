@@ -1,24 +1,19 @@
-import { HashRouter, NavLink, Route, Routes } from 'react-router-dom'
-import { ItemsProvider } from './features/items/ItemsContext'
-import ItemsPage from './pages/ItemsPage'
-import AboutPage from './pages/AboutPage'
-import styles from './App.module.css'
+import { HashRouter, Route, Routes } from 'react-router-dom'
+import { I18nProvider } from './i18n'
+import Layout from './components/Layout'
+import Landing from './pages/Landing'
 
 export default function App() {
   return (
-    <HashRouter>
-      <ItemsProvider>
-        <nav className={styles.nav}>
-          <NavLink to="/">Items</NavLink>
-          <NavLink to="/about">About</NavLink>
-        </nav>
-        <main className={styles.main}>
-          <Routes>
-            <Route path="/" element={<ItemsPage />} />
-            <Route path="/about" element={<AboutPage />} />
-          </Routes>
-        </main>
-      </ItemsProvider>
-    </HashRouter>
+    <I18nProvider>
+      <HashRouter>
+        <Routes>
+          <Route element={<Layout />}>
+            <Route path="/" element={<Landing />} />
+            <Route path="*" element={<Landing />} />
+          </Route>
+        </Routes>
+      </HashRouter>
+    </I18nProvider>
   )
 }
