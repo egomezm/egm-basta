@@ -1,7 +1,7 @@
 # Basta Online – Plan
 
-Repo: egm-basta (Vite + React 19 + TS, HashRouter, base /egm-basta/, GitHub Pages, Supabase).
-Note: HashRouter + `?session=code` — join links are `https://…/egm-basta/?session=a1b2c3` (query before the hash); the app reads it on load and routes to `#/join`.
+Repo: egm-basta (Vite + React 19 + TS, HashRouter, base /, GitHub Pages on the custom domain https://basta.egmzone.com, Supabase).
+Note: HashRouter + `?session=code` — join links are `https://basta.egmzone.com/?session=a1b2c3` (query before the hash); the app reads it on load and routes to `#/join`.
 
 ## 1. Decisions confirmed
 - Realtime: clients poll `basta_get_state` every ~2.5 s (this is also the presence heartbeat) and `@supabase/supabase-js` (dynamically imported, Broadcast only) sends a "ping" on channel `basta:<code>` after every action so other clients refetch immediately. REST stays plain fetch. No Postgres-changes subscriptions, so tables stay unreadable by the anon role.

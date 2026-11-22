@@ -18,7 +18,7 @@ Online version of the paper game *Basta* (Tutti Frutti). Vite + React 19 + TypeS
 
 ## Deploy
 
-Pushing to `main` runs `.github/workflows/deploy.yml` (lint, test, build, deploy to GitHub Pages). Set the repository variables `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY`, and set Pages source to *GitHub Actions*. The app is served from `/egm-basta/`; invite links look like `/egm-basta/?session=CODE`.
+Pushing to `main` runs `.github/workflows/deploy.yml` (lint, test, build, deploy to GitHub Pages). Set the repository variables `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY`, and set Pages source to *GitHub Actions*. The app is served from the custom domain https://basta.egmzone.com (root path, `public/CNAME`); invite links look like `https://basta.egmzone.com/?session=CODE`.
 
 ## Versioning
 
